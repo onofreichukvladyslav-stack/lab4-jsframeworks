@@ -5,9 +5,15 @@ const path = require('path');
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
+// This API is intentionally public for the local frontend. The default CORS
+// configuration allows every origin and handles OPTIONS requests as well.
+app.use(cors({ origin: '*' }));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
 
 const songs = [{
     id: 1,
@@ -70,6 +76,10 @@ app.get('/api/songs/:id', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server started on http://localhost:${PORT}`);
+});
+
+server.on('error', (error) => {
+    console.error(`Unable to start the API on port ${PORT}:`, error.message);
 });

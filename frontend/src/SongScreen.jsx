@@ -16,7 +16,7 @@ function SongScreen() {
     const [volume, setVolume] = useState(1);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/api/songs/${id}`)
+        fetch(`https://lab4-jsframeworks-production.up.railway.app/api/songs/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 setSong(data);

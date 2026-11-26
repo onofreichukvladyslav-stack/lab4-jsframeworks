@@ -7,7 +7,7 @@ function Home() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/songs')
+        fetch('https://lab4-jsframeworks-production.up.railway.app/api/songs')
             .then((response) => response.json())
             .then((data) => {
                 setSongs(data);

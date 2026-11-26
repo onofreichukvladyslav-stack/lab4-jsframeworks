@@ -1,7 +1,7 @@
 # Multi-stage Dockerfile to build and run both React frontend and Node.js backend
 
 # Stage 1: Build the React frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:20-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 
@@ -9,7 +9,7 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy frontend source
 COPY frontend/ .
@@ -18,7 +18,7 @@ COPY frontend/ .
 RUN npm run build
 
 # Stage 2: Build/prepare the backend
-FROM node:18-alpine AS backend-builder
+FROM node:20-alpine AS backend-builder
 
 WORKDIR /app/backend
 
@@ -26,25 +26,22 @@ WORKDIR /app/backend
 COPY backend/package*.json ./
 
 # Install production dependencies
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Stage 3: Final runtime image
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy built React frontend from builder
-COPY --from=frontend-builder /app/frontend/build ./frontend/build
+# Copy built React frontend from builder and place it in backend's public directory
+COPY --from=frontend-builder /app/frontend/build ./backend/public
 
 # Copy backend app files
 COPY backend/ ./backend/
 
 # Copy backend node_modules from builder
 COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
-
-# Ensure public directory exists for static files
-RUN mkdir -p ./backend/public || true
 
 # Set environment variables
 ENV NODE_ENV=production
