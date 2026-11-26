@@ -43,8 +43,8 @@ COPY backend/ ./backend/
 # Copy backend node_modules from builder
 COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
 
-# Copy backend public assets if they exist
-COPY backend/public ./backend/public 2>/dev/null || true
+# Ensure public directory exists for static files
+RUN mkdir -p ./backend/public || true
 
 # Set environment variables
 ENV NODE_ENV=production
